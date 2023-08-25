@@ -33,7 +33,7 @@ interface UpdateHomeParams {
   propertyType?: PropertyType;
 }
 
-const homeSelect = {
+export const homeSelect = {
   id: true,
   address: true,
   city: true,

@@ -9,15 +9,37 @@ const mockGetHomes = [
     address: '2345William Str',
     cit: 'Toronto',
     price: 1500000,
-    propertyType: PropertyType.RESIDENTIAL,
+    property_type: PropertyType.RESIDENTIAL,
     image: 'img1',
-    numberOfBedrooms: 3,
-    numberOfBathroooms: 2.5,
+    number_of_bedrooms: 3,
+    number_of_bathroooms: 2.5,
     images: [
       {
         url: 'src1',
       },
     ],
+  },
+];
+
+const mockHome = {
+  id: 1,
+  address: '2345William Str',
+  cit: 'Toronto',
+  price: 1500000,
+  property_type: PropertyType.RESIDENTIAL,
+  image: 'img1',
+  number_of_bedrooms: 3,
+  number_of_bathroooms: 2.5,
+};
+
+const mockImages = [
+  {
+    id: 1,
+    url: 'src1',
+  },
+  {
+    id: 2,
+    url: 'src2',
   },
 ];
 
@@ -34,6 +56,10 @@ describe('HomeService', () => {
           useValue: {
             home: {
               findMany: jest.fn().mockReturnValue(mockGetHomes),
+              create: jest.fn().mockReturnValue(mockHome),
+            },
+            image: {
+              createMany: jest.fn().mockReturnValue(mockImages),
             },
           },
         },
@@ -84,6 +110,64 @@ describe('HomeService', () => {
       await expect(service.getHomes(filters)).rejects.toThrowError(
         NotFoundException,
       );
+    });
+  });
+
+  describe('createMany', () => {
+    const mockCreateHomeParams = {
+      address: '111 yellow Str',
+      numberOfBathroooms: 2,
+      numberOfBedrooms: 2,
+      city: 'Vancouver',
+      landSize: 4444,
+      propertyType: PropertyType.RESIDENTIAL,
+      price: 3000000,
+      images: [
+        {
+          url: 'src1',
+        },
+      ],
+    };
+    it('should call prisma home.create with the correct payload', async () => {
+      const mockCreateHome = jest.fn().mockReturnValue(mockHome);
+
+      jest
+        .spyOn(prismaService.home, 'create')
+        .mockImplementation(mockCreateHome);
+
+      await service.createHome(mockCreateHomeParams, 5);
+
+      expect(mockCreateHome).toBeCalledWith({
+        data: {
+          address: '111 yellow Str',
+          number_of_bathroooms: 2,
+          number_of_bedrooms: 2,
+          city: 'Vancouver',
+          land_size: 4444,
+          propertyType: PropertyType.RESIDENTIAL,
+          price: 3000000,
+          realtor_id: 5,
+        },
+      });
+    });
+
+    it('should call prisma home.createMany with the correct payload', async () => {
+      const mockCreateManyImage = jest.fn().mockReturnValue(mockImages);
+
+      jest
+        .spyOn(prismaService.image, 'createMany')
+        .mockImplementation(mockCreateManyImage);
+
+      await service.createHome(mockCreateHomeParams, 5);
+
+      expect(mockCreateManyImage).toBeCalledWith({
+        data: [
+          {
+            url: 'src1',
+            home_id: 1,
+          },
+        ],
+      });
     });
   });
 });

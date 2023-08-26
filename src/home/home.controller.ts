@@ -9,7 +9,6 @@ import {
   ParseIntPipe,
   Body,
   UnauthorizedException,
-  UseGuards,
 } from '@nestjs/common';
 import { HomeService } from './home.service';
 import {
@@ -20,7 +19,6 @@ import {
 } from './dto/home.dto';
 import { PropertyType, UserType } from '@prisma/client';
 import { User, UserInfo } from 'src/user/decorators/user.decorator';
-import { AuthGuard } from './guards/auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('home')

@@ -66,7 +66,7 @@ describe('HomeController', () => {
       iat: 1,
       exp: 2,
     };
-    const mockCreateHomeParams = {
+    const mockUpdateHomeParams = {
       id: 1,
       address: '2345William Str',
       cit: 'Toronto',
@@ -76,10 +76,24 @@ describe('HomeController', () => {
       number_of_bedrooms: 3,
       number_of_bathroooms: 2.5,
     };
-    it("should throw unath error if realtor didn't creat home", async () => {
+    it("should throw unauth error if realtor didn't create home", async () => {
       await expect(
-        controller.updateHome(5, mockCreateHomeParams, mockUserInfo),
+        controller.updateHome(5, mockUpdateHomeParams, mockUserInfo),
       ).rejects.toThrowError(UnauthorizedException);
+    });
+
+    it('should update home if realtor id is valid', async () => {
+      const mockUpdateHome = jest.fn().mockReturnValue(mockHome);
+      jest
+        .spyOn(homeService, 'updateHomeById')
+        .mockImplementation(mockUpdateHome);
+
+      await controller.updateHome(5, mockUpdateHomeParams, {
+        ...mockUserInfo,
+        id: 53,
+      });
+
+      expect(mockUpdateHome).toBeCalled();
     });
   });
 });
